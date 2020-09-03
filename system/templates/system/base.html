@@ -9,12 +9,36 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <link rel='stylesheet' type='text/css' href='{% static '/css/main.css'%}'>
+  <link href="{% static 'images/logo.png'%}" rel="icon" type="image/x-icon" />
 </head>
 
 <body>
-  {% include 'system/navbar.html' %}
+  {% comment %} {% include 'system/navbar.html' %} {% endcomment %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<img src='{% static 'images/logo.png'%}'>
+  <a class="navbar-brand" href="/">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% block home_active %}
+      {% endblock home_active %}">
+        <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+      </li>
+      <li class="nav-item {% block product_active %}
+      {% endblock product_active %}">
+        <a class="nav-link" href="/products">Products </a>
+      </li>
+
+
+  </div>
+</nav>
   <div class="container-fluid">
-  {% block navbar %}{% endblock navbar %}
+  {% block body %}{% endblock body %}
+  
 </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

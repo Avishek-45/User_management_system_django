@@ -1,5 +1,9 @@
 {% extends 'system/base.html' %}
-{% block navbar %}
+{% block home_active %}active
+{% endblock home_active %}
+
+
+{% block body %}
 
 
 {% include 'system/status.html' %}
@@ -19,7 +23,7 @@
 				</tr>
 				{%for i in customers%}
 				<tr>
-					<th></th>
+					<th><a href="{% url 'customers' i.id%} " class="btn btn-sm btn-info">View</a></th>
 					<th>{{i.name}}</th>
 					<th>{{i.phone}}</th>
 				</tr>
@@ -47,8 +51,8 @@
 						<td>{{order.Products}}</td>
 						<td>{{order.date_created}}</td>
 						<td>{{order.Status}}</td>
-						<td><a href="">Update</a></td>
-						<td><a href="">Delete</a></td>
+						<td><a href="" class="btn btn-sm btn-info">Update</a></td>
+						<td><a href="" class="btn btn-sm btn-danger">Delete</a></td>
 
 					</tr>
 				{% endfor %}
@@ -62,4 +66,4 @@
 
 
 
-{% endblock navbar %}
+{% endblock body %}
