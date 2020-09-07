@@ -1,0 +1,17 @@
+{% extends 'system/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{form}}
+                <input type="submit" class="btn btn-success" name="submit" value="submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
