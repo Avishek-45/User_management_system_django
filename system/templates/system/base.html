@@ -33,8 +33,15 @@
         <a class="nav-link" href="/products">Products </a>
       </li>
 
-
   </div>
+  <style>
+.hello{
+  color: #fff;
+  margin-right:20px;
+}
+</style>
+  <span class="hello">Hello,{{request.user}}</span>
+  <span><a href="{%url 'logout'%}" class="hello">Logout</a></span>
 </nav>
   <div class="container-fluid">
   {% block body %}{% endblock body %}

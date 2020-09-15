@@ -1,11 +1,15 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import *
 from django.forms import inlineformset_factory
-from .forms import Orderform
+from .forms import Orderform, CreateUserForm
 from .filters import OrderFilter
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
+@login_required(login_url='login')
 def home(request):
     order = Order.objects.all()
     Customers = customer.objects.all()
@@ -26,19 +30,21 @@ def home(request):
     return render(request, 'system/Dashboard.html', content)
 
 
+@login_required(login_url='login')
 def customers(request, pk_test):
     Customers = customer.objects.get(id=pk_test)
     # inherting childs objects(order) from parent class i.e customer
-    orders = Customers.order_set.all()   #customer ko help bata order call gareko
+    orders = Customers.order_set.all()  # customer ko help bata order call gareko
     total_order = orders.count()
-    fil=OrderFilter(request.GET,queryset=orders)
-    orders=fil.qs
+    fil = OrderFilter(request.GET, queryset=orders)
+    orders = fil.qs
     context = {'customer': Customers,
-               'order': orders, 'total_order': total_order,'fill':fil}
+               'order': orders, 'total_order': total_order, 'fill': fil}
 
     return render(request, 'system/customer.html', context)
 
 
+@login_required(login_url='login')
 def products(request):
 
     Products = product.objects.all()
@@ -46,13 +52,14 @@ def products(request):
     return render(request, 'system/products.html', content)
 
 
+@login_required(login_url='login')
 def createorder(request, pk):
     # customers=customer.objects.get(id=pk)
     # form=Orderform(initial={'customer':customers})
     OrderFormSet = inlineformset_factory(
-        customer, Order, fields=('Products', 'Status'),extra=6)
+        customer, Order, fields=('Products', 'Status'), extra=6)
     Customer = customer.objects.get(id=pk)
-    formset = OrderFormSet( queryset=Order.objects.none(),instance=Customer)
+    formset = OrderFormSet(queryset=Order.objects.none(), instance=Customer)
     if request.method == "POST":
         formset = OrderFormSet(request.POST, instance=Customer)
         if formset.is_valid():
@@ -62,7 +69,7 @@ def createorder(request, pk):
     context = {'form': formset}
     return render(request, 'system/order_form.html', context)
 
-
+@login_required(login_url='login')
 def updateorder(request, pk):
 
     order = Order.objects.get(id=pk)
@@ -78,6 +85,7 @@ def updateorder(request, pk):
     return render(request, 'system/order_form.html', context)
 
 
+@login_required(login_url='login')
 def deleteorder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == "POST":
@@ -86,3 +94,44 @@ def deleteorder(request, pk):
 
     context = {'item': order}
     return render(request, 'system/delete_order.html', context)
+
+
+def registerPage(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        regis = CreateUserForm()  # imported from forms
+
+        if request.method == "POST":
+            regis = CreateUserForm(request.POST)
+            if regis.is_valid():
+                regis.save()
+                messages.success(request, 'Account was created')
+                return redirect('login')
+
+        context = {'regis': regis}
+        return render(request, 'system/register.html', context)
+
+
+def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.info(request, 'Username OR password is incorrect')
+        context = {}
+        return render(request, 'system/login.html', context)
+
+@login_required(login_url='login')
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
