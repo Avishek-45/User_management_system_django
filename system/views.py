@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from .models import *
 from django.forms import inlineformset_factory
 from .forms import Orderform
-
+from .filters import OrderFilter
 # Create your views here.
 
 
@@ -29,11 +29,12 @@ def home(request):
 def customers(request, pk_test):
     Customers = customer.objects.get(id=pk_test)
     # inherting childs objects(order) from parent class i.e customer
-    orders = Customers.order_set.all()
+    orders = Customers.order_set.all()   #customer ko help bata order call gareko
     total_order = orders.count()
-
+    fil=OrderFilter(request.GET,queryset=orders)
+    orders=fil.qs
     context = {'customer': Customers,
-               'order': orders, 'total_order': total_order}
+               'order': orders, 'total_order': total_order,'fill':fil}
 
     return render(request, 'system/customer.html', context)
 
