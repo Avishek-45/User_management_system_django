@@ -6,10 +6,13 @@ from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user,allowed_users,admin_only
+from django.contrib.auth.models import Group
 # Create your views here.
 
 
 @login_required(login_url='login')
+@admin_only
 def home(request):
     order = Order.objects.all()
     Customers = customer.objects.all()
@@ -45,6 +48,7 @@ def customers(request, pk_test):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def products(request):
 
     Products = product.objects.all()
@@ -53,6 +57,7 @@ def products(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def createorder(request, pk):
     # customers=customer.objects.get(id=pk)
     # form=Orderform(initial={'customer':customers})
@@ -69,7 +74,9 @@ def createorder(request, pk):
     context = {'form': formset}
     return render(request, 'system/order_form.html', context)
 
+
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def updateorder(request, pk):
 
     order = Order.objects.get(id=pk)
@@ -86,6 +93,7 @@ def updateorder(request, pk):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def deleteorder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == "POST":
@@ -96,6 +104,7 @@ def deleteorder(request, pk):
     return render(request, 'system/delete_order.html', context)
 
 
+@unauthenticated_user
 def registerPage(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -105,7 +114,11 @@ def registerPage(request):
         if request.method == "POST":
             regis = CreateUserForm(request.POST)
             if regis.is_valid():
-                regis.save()
+                user = regis.save()
+
+                # user register bhayepaxi kun group ma halni bhanna ko lagi-->admin or customer banaune
+                group = Group.objects.get(name='customer')
+                user.groups.add(group)
                 messages.success(request, 'Account was created')
                 return redirect('login')
 
@@ -113,25 +126,29 @@ def registerPage(request):
         return render(request, 'system/register.html', context)
 
 
+@unauthenticated_user
 def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-    else:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
 
-            user = authenticate(request, username=username, password=password)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                messages.info(request, 'Username OR password is incorrect')
-        context = {}
-        return render(request, 'system/login.html', context)
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username OR password is incorrect')
+    context = {}
+    return render(request, 'system/login.html', context)
+
 
 @login_required(login_url='login')
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+
+def userpage(request):
+    return render(request, 'system/userpage.html')

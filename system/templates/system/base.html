@@ -28,11 +28,12 @@
       {% endblock home_active %}">
         <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
       </li>
+      {%if request.user.is_staff%}
       <li class="nav-item {% block product_active %}
       {% endblock product_active %}">
         <a class="nav-link" href="/products">Products </a>
       </li>
-
+    {% endif %}
   </div>
   <style>
 .hello{
