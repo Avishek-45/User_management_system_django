@@ -116,13 +116,6 @@ def registerPage(request):
             if regis.is_valid():
                 user = regis.save()
 
-                # user register bhayepaxi kun group ma halni bhanna ko lagi-->admin or customer banaune
-                group = Group.objects.get(name='customer')
-                user.groups.add(group)
-                customer.objects.create(
-                    user=user
-                )
-
                 messages.success(request, 'Account was created')
                 return redirect('login')
 
