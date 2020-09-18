@@ -2,6 +2,30 @@
 
 {% block body %}
 
-
 {% include 'system/status.html' %}
+<div class="row">
+	<div class="col-md">
+		<div class="card card-body">
+			<table class="table table-sm">
+				<tr>
+					<th>Product</th>
+					<th>Notes</th>
+					<th>Date Orderd</th>
+					<th>Status</th>
+					
+				</tr>
+				{%for i in order%}
+				<tr>
+					<th>{{i.Products}}</th>
+					<th>{{i.note}}</th>
+					<th>{{i.date_created}}</th>
+					<th>{{i.Status}}</th>
+					
+				</tr>
+				{%endfor%}
+
+			</table>
+		</div>
+	</div>
+</div>
 {% endblock body %}

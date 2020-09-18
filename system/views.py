@@ -6,7 +6,7 @@ from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .decorators import unauthenticated_user,allowed_users,admin_only
+from .decorators import unauthenticated_user, allowed_users, admin_only
 from django.contrib.auth.models import Group
 # Create your views here.
 
@@ -119,6 +119,10 @@ def registerPage(request):
                 # user register bhayepaxi kun group ma halni bhanna ko lagi-->admin or customer banaune
                 group = Group.objects.get(name='customer')
                 user.groups.add(group)
+                customer.objects.create(
+                    user=user
+                )
+
                 messages.success(request, 'Account was created')
                 return redirect('login')
 
@@ -150,5 +154,18 @@ def logoutUser(request):
     return redirect('login')
 
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer'])
 def userpage(request):
-    return render(request, 'system/userpage.html')
+    order = request.user.customer.order_set.all()  #user bata customer ko obejct haru le ko
+
+    total_orders = order.count()
+    deliverd = order.filter(Status='Delivered').count()
+    pending = order.filter(Status='Pending').count()
+
+    context = {'order': order,
+               'tot_orders': total_orders,
+               'delivered': deliverd,
+               'pending': pending
+               }
+    return render(request, 'system/userpage.html', context)

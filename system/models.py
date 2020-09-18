@@ -1,8 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 class customer(models.Model):
+    #cascade(when user is deleted that customer is also deleted)
+    
+    user=models.OneToOneField(User,null=True,on_delete=models.CASCADE)#user lai customer banau na yo gareko
     name=models.CharField(max_length=100,null=True)
     phone=models.CharField(max_length=100,null=True)
     email=models.CharField(max_length=100,null=True)

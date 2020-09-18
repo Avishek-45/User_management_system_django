@@ -1,9 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
+
+#the role of decorator is to render the views with respect to its role
+
 def unauthenticated_user(view_func):
 	def wrapper_func(request, *args, **kwargs):
-		if request.user.is_authenticated:
+		if request.user.is_authenticated:#if user is authenticated,home ma redirect garxa natra views ma bhako function call hunxa
 			return redirect('home')
 		else:
 			return view_func(request, *args, **kwargs)
