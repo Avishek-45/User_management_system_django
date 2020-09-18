@@ -10,6 +10,7 @@ class customer(models.Model):
     name=models.CharField(max_length=100,null=True)
     phone=models.CharField(max_length=100,null=True)
     email=models.CharField(max_length=100,null=True)
+    profile_picture=models.ImageField(default="profile.png",null=True,blank=True)
     date_created=models.TimeField(auto_now_add=True,null=True)
 
     def __str__(self):

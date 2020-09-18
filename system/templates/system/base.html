@@ -33,7 +33,16 @@
       {% endblock product_active %}">
         <a class="nav-link" href="/products">Products </a>
       </li>
+
+      {%else%}
+       <li class="nav-item {% block settings_active %}
+      {% endblock settings_active %}">
+        <a class="nav-link" href="{%url 'settingpage'%}">Settings </a>
+      </li>
+
     {% endif %}
+    
+    
   </div>
   <style>
 .hello{

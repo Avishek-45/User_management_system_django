@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import *
 from django.forms import inlineformset_factory
-from .forms import Orderform, CreateUserForm
+from .forms import Orderform, CreateUserForm,Customerform
 from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -169,3 +169,17 @@ def userpage(request):
                'pending': pending
                }
     return render(request, 'system/userpage.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer'])
+def settingpage(request):
+    Customer=request.user.customer
+    form=Customerform(instance=Customer)
+
+    if request.method=="POST":
+        form=Customerform(request.POST,request.FILES,instance=Customer)
+        if form.is_valid():
+            form.save()
+
+    context={'form':form}
+    return render(request,'system/account_setting.html',context)
